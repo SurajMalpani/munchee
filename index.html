@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Munchee — What Should I Eat?</title>
+  <meta name="description" content="Munchee suggests vegetarian and vegan recipes from what's already in your kitchen." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <a href="index.html" class="brand" title="Start over">Munchee</a>
+    <h1>What Should I Eat?</h1>
+    <p>Vegetarian &amp; vegan ideas from what's in your kitchen, the time you have, and the nutrition you want.</p>
+    <p id="dataset-stats" class="stats"></p>
+  </header>
+
+  <main class="layout">
+    <form id="prefs" class="panel" autocomplete="off">
+      <section class="field">
+        <label for="ingredient-input">Ingredients you have</label>
+        <div class="chip-input" id="chip-box">
+          <ul id="chips" class="chips"></ul>
+          <input id="ingredient-input" type="text" list="ingredient-options" placeholder="Start typing, e.g. chickpea, spinach…" />
+        </div>
+        <datalist id="ingredient-options"></datalist>
+        <details class="browse" open>
+          <summary>Browse ingredients</summary>
+          <div id="categories"></div>
+        </details>
+      </section>
+
+      <section class="field">
+        <label for="time">Time you have: <strong><output id="time-out">30 min</output></strong></label>
+        <input id="time" type="range" min="5" max="180" step="5" value="30" />
+      </section>
+
+      <section class="field">
+        <span class="label">Nutrition goals <small>(per serving)</small></span>
+        <div class="toggles" id="goals"></div>
+      </section>
+
+      <section class="field">
+        <span class="label">Diet</span>
+        <div class="toggles">
+          <label><input type="radio" name="diet" value="vegetarian" checked /> Vegetarian (incl. vegan)</label>
+          <label><input type="radio" name="diet" value="vegan" /> Vegan only</label>
+        </div>
+      </section>
+
+      <section class="field two-col">
+        <div>
+          <label for="course">Show me</label>
+          <select id="course">
+            <option value="0" selected>Meals &amp; snacks</option>
+            <option value="1">Desserts &amp; baking</option>
+            <option value="2">Drinks</option>
+            <option value="3">Sauces &amp; extras</option>
+            <option value="all">Everything</option>
+          </select>
+        </div>
+        <div>
+          <label for="missing">OK to buy</label>
+          <select id="missing">
+            <option value="0">Nothing extra</option>
+            <option value="1">Up to 1 item</option>
+            <option value="2" selected>Up to 2 items</option>
+            <option value="3">Up to 3 items</option>
+            <option value="5">Up to 5 items</option>
+            <option value="99">Any amount</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="field two-col">
+        <div>
+          <label for="sort">Sort by</label>
+          <select id="sort">
+            <option value="match" selected>Best match</option>
+            <option value="popular">Popular dishes first</option>
+            <option value="quick">Quickest first</option>
+          </select>
+        </div>
+        <div class="check">
+          <label><input type="checkbox" id="hide-similar" checked /> Hide similar recipes</label>
+        </div>
+      </section>
+
+      <button type="submit" class="primary">Suggest recipes</button>
+      <button type="button" id="clear" class="link">Clear ingredients</button>
+    </form>
+
+    <section class="results">
+      <p id="summary" class="summary">Add a few ingredients and hit “Suggest recipes” — or just hit it for some random inspiration.</p>
+      <div id="results" class="grid"></div>
+      <button type="button" id="more" class="secondary" hidden>Load more</button>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Recipes and nutrition from the Food.com dataset (Majumder et al., 2019, via Kaggle). Nutrition is per serving as
+    reported by Food.com; grams are approximate, converted from % daily value. Vegetarian/vegan labels are inferred from
+    ingredients — double-check labels if you're strict.
+  </footer>
+
+  <template id="card-template">
+    <article class="card">
+      <div class="photo">
+        <span class="emoji"></span>
+        <img alt="" hidden />
+        <button type="button" class="gen-btn">Generate picture</button>
+      </div>
+      <div class="body">
+        <h2 class="title"></h2>
+        <p class="meta"></p>
+        <p class="match"></p>
+        <p class="missing"></p>
+        <p class="similar"></p>
+        <ul class="badges"></ul>
+        <details class="recipe">
+          <summary>Recipe &amp; nutrition</summary>
+          <p class="desc"></p>
+          <h3>Ingredients</h3>
+          <ul class="ingredients"></ul>
+          <h3>Nutrition <small>per serving</small></h3>
+          <table class="nutrition"><tbody></tbody></table>
+          <h3>Steps</h3>
+          <ol class="steps"><li class="loading">Loading…</li></ol>
+        </details>
+      </div>
+    </article>
+  </template>
+
+  <template id="about-template">
+    <article class="card about">
+      <div class="body">
+        <p class="eyebrow">About me</p>
+        <h2 class="title">Hi, I made Munchee 👋</h2>
+        <p>I build small, fun things for the web. Munchee is the friend who peeks in your fridge and says "you could make shakshuka with that", not a company that wants your email.</p>
+        <p><b>Less waste, by design.</b> Every suggestion starts from what you already have, so the half bag of spinach and the last two tomatoes get eaten instead of binned. Pantry staples are assumed, "OK to buy" keeps the shopping list short, and each card tells you exactly what you'd need to grab. Less food thrown out, fewer trips to the shop, more money left over.</p>
+        <details class="promises">
+          <summary>The internet keeps getting worse for the people using it. Munchee goes the other way. <b>Deshittified, by design.</b> <span class="more-link"></span></summary>
+          <ul>
+            <li><b>No app.</b> Just open the link.</li>
+            <li><b>No sign-up.</b> No email, no phone number, no spam.</li>
+            <li><b>No ads or pop-ups.</b> And no life story before the recipe.</li>
+            <li><b>No tracking.</b> What's in your fridge stays in your browser.</li>
+            <li><b>No limits.</b> Search and load as much as you like.</li>
+            <li><b>Free, and it won't get worse.</b> No paywall, no premium tier.</li>
+          </ul>
+        </details>
+        <p>Mostly, it's meant to be fun: tap a few things from your kitchen and find something you've never cooked before.</p>
+        <h3>If you can, chip in</h3>
+        <p>This is the only thing I'll ever ask. Everything here is free and will stay free. If Munchee saved you a trip to the shop or a sad bag of wilted greens, donate whatever you can, whenever you can.</p>
+        <div class="pay">
+          <a href="https://www.paypal.me/YOUR_HANDLE" target="_blank" rel="noopener noreferrer">Donate with PayPal</a>
+          <a href="https://venmo.com/u/YOUR_HANDLE" target="_blank" rel="noopener noreferrer">Donate with Venmo</a>
+          <a href="upi://pay?pa=YOUR_UPI_ID&amp;pn=YOUR_NAME&amp;cu=INR">Pay with UPI</a>
+        </div>
+        <p class="fine">UPI ID: <b>yourname@bank</b>. The UPI button opens GPay, PhonePe, Paytm or any UPI app on your phone.
+          A donation is a thank-you, not a purchase. There's nothing to unlock, and nobody gets a better version.</p>
+        <p class="fine">Can't right now? Completely fine. Share Munchee with a friend, cook something good. That counts too.
+          Thirsty? Try <a href="../drinkee/index.html">Drinkee</a>.</p>
+      </div>
+    </article>
+  </template>
+
+  <script src="data/recipes-index.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
