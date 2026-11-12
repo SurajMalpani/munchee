@@ -17,7 +17,6 @@ Open `index.html` in a browser. No server, build step, or API key is needed (the
 - **Popularity** is a proxy: how many Food.com recipes share the dish type (the last two meaningful name words, e.g. "Creamy Roasted Tomato Soup" counts as "tomato soup"). Dishes with 50+ versions get a "Popular dish" badge. Real ratings live in Kaggle's `RAW_interactions.csv`, but the mirror has no recipe ids to join on.
 - **Hide similar recipes** (on by default): skips a recipe if its name reduces to the same dish as one already shown ("Easy Tomato Soup", "Mom's Tomato Soup II"). It also skips recipes whose main ingredients overlap ≥ 75% with a shown one, or ≥ 50% when the names also share words ("Angel Hair with Tomato and Basil" vs "Capellini with Tomatoes, Garlic and Basil"). Ingredients are compared by main noun, so "garlic clove" = "garlic" and "roma tomato" = "tomato". Cards show how many similar versions were hidden.
 - **5 recipes at a time**, with **Load more** for the next 5.
-- **About me card** after the recipes: the no-app, no-sign-up, no-ads promise, the less-food-waste idea, and donation links. Before publishing, replace the placeholders in `#about-template` in `index.html`: `YOUR_HANDLE` in the PayPal and Venmo links, and `YOUR_UPI_ID`, `YOUR_NAME` and `yourname@bank` for UPI. Drinkee has the same card.
 - **Recipe details**: description, ingredients marked have / need / pantry, a nutrition table (calories, protein, carbs, sugar, fat, saturated fat, sodium in grams and % daily value), and steps.
 - **Generate picture** button per recipe (see below).
 

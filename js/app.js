@@ -415,11 +415,9 @@
     return card;
   }
 
-  const aboutCard = $("about-template").content.firstElementChild.cloneNode(true);
-
-  // New recipes go in before "Load more" and the about card, which always stay last.
+  // New recipes go in before "Load more", which always stays last.
   function renderPage(prefs) {
-    resultsEl.append(...nextPage(prefs).map((s) => renderCard(s, prefs)), moreBtn, aboutCard);
+    resultsEl.append(...nextPage(prefs).map((s) => renderCard(s, prefs)), moreBtn);
     moreBtn.hidden = cursor >= ranked.length;
     moreBtn.onclick = () => renderPage(prefs);
   }
