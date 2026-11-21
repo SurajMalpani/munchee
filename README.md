@@ -1,6 +1,6 @@
 # Munchee: What Should I Eat?
 
-A static webpage that suggests vegetarian and vegan recipes from the ingredients you have, the time you've got, and the nutrition you want. Sister app of [Drinkee](../drinkee/).
+A static webpage that suggests vegetarian and vegan recipes from the ingredients you have, the time you've got, and the nutrition you want. Sister app of [Drinkee](https://drinkee.vayuputra.co/).
 
 Open `index.html` in a browser. No server, build step, or API key is needed (the data files are plain `.js` so they also work from `file://`).
 
