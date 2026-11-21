@@ -6,7 +6,7 @@ Open `index.html` in a browser. No server, build step, or API key is needed (the
 
 ## Features
 
-- **34,466 recipes** (7,932 vegan) and ~6,700 ingredients from the Food.com dataset, after dropping 8,543 near-duplicate re-posts (see below).
+- **33,199 recipes** (7,118 vegan) and ~6,550 ingredients from the Food.com dataset, after dropping 8,247 near-duplicate re-posts and 1,565 alcoholic drinks (see below).
 - **Ingredient input** with autocomplete (top 2,500 ingredients) and a "Browse ingredients" panel in 9 groups. Each group shows its 7 most-used ingredients (by how many recipes use them, skipping ones a shown item already covers, like "fresh basil" under "basil"). "more…" reveals the rest of the ~170 picks, and selected ones stay visible.
 - **Smart matching**: handles plurals and forms ("garlic clove" counts as garlic, "cherry tomato" as tomato) but won't treat "tomato paste" as fresh tomato. Compounds that are a different food stay separate: potato doesn't match sweet potato, butter doesn't match peanut butter, and milk doesn't match coconut milk (`DISTINCT` in `js/app.js`). Pantry staples (salt, oil, water, sugar, flour…) are assumed.
 - **One name per ingredient**: regional names, alternate spellings and typos map to one form, in the data and in what you type. For example, panir and paneer cheese become paneer, garbanzo beans become chickpea, scallion and spring onion become green onion, aubergine becomes eggplant, yoghurt becomes yogurt, and jalapeño becomes jalapeno. Spacing variants ("sweetcorn" / "sweet corn") merge into the more common one automatically. The alias table is `ALIASES` in `build_data.py`, and the build ships it to the page. It's hand-picked because automatic near-spelling merges in this data are mostly wrong (spiced/sliced, besan/bean, morel/morsel).
@@ -28,7 +28,7 @@ styles.css            styles
 js/app.js             matching, ranking, rendering, lazy step loading
 scripts/build_data.py builds data/ from the Food.com dataset
 data/recipes-index.js recipe index loaded up front (~3.4 MB)
-data/steps/*.js       descriptions + steps, loaded when a recipe is opened (230 files, ~24 MB)
+data/steps/*.js       descriptions + steps, loaded when a recipe is opened (222 files, ~24 MB)
 data/raw/             downloaded source files (git-ignored)
 ```
 
@@ -44,6 +44,8 @@ uv run --with pandas --with pyarrow --with fsspec --with aiohttp --with truststo
 `--fetch` downloads only the needed columns of the 11 source shards (~4 MB of each 17 MB file) into `data/raw/`. Omit it to rebuild from the cache, e.g. after editing the diet or course rules. `truststore` makes Python trust the OS certificate store, which is needed behind TLS-inspecting corporate proxies.
 
 The build drops near-duplicate recipes: a recipe goes if a better one (more popular dish type, has a description, more detailed steps) shares ≥ 75% of its main ingredients and has similar steps (weighted step-word overlap ≥ 0.1). Both comparisons weight items by rarity, so sharing avocado and tomatillo counts far more than sharing butter and egg, and "mash" or "griddle" far more than "add" or "stir". Without the weighting, every butter-egg-vanilla bake looks like a copy of every other. Tune `SAME_INGREDIENTS` and `SAME_STEPS` in `build_data.py`: 0.8 and 0.1 keep ~37,000 recipes, and 0.75 and 0.15 keep ~37,500.
+
+The build drops alcoholic drinks (cocktails, shots, homemade liqueurs); smoothies, coffees, shakes, and other non-alcoholic drinks stay under Drinks. Besides names ending in a drink word, `is_drink()` in `build_data.py` catches oddly named drinks ("Bahama Mama", "57 Chevy") by mostly-liquid ingredients and serving steps (glass, shaker, blender), and `has_alcohol()` decides which go. Food that only uses a splash of liquor, like rum cake or penne alla vodka, stays.
 
 The script keeps the normalization rules in sync with `normalize()` in `js/app.js`; change both together.
 

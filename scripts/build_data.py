@@ -226,6 +226,93 @@ def course(name):
 
 COURSE_CODE = {"main": 0, "sweet": 1, "drink": 2, "condiment": 3}
 
+
+# --- Drinks ---------------------------------------------------------------------
+# Alcoholic drinks (cocktails, shots, liqueurs) are dropped; smoothies, coffees, shakes and
+# other non-alcoholic drinks stay under the "drink" course. Many
+# cocktails have names like "Bahama Mama" or "57 Chevy", so besides the name's last word
+# (DRINK_LAST) a recipe counts as a drink when it isn't named or cooked like food and its
+# ingredients are mostly liquids, or it is served in a glass, shaken or blended. Food that
+# only uses a splash of liquor (rum cake, penne alla vodka, bananas foster) stays.
+
+ALCOHOL = re.compile(
+    r"\b(vodka|rum|gin|tequila|whiske?y|bourbon|brandy|cognac|liqueur|liquor|schnapps|vermouth|kahlua|"
+    r"amaretto|triple sec|cointreau|grand marnier|irish cream|scotch|absinthe|everclear|creme de|curacao|"
+    r"frangelico|midori|sambuca|ouzo|campari|aperol|limoncello|galliano|drambuie|pisco|mezcal|cachaca|"
+    r"bitters|champagne|prosecco|sparkling wine|hpnotiq|alcohol|wine|beer|sake|port|ale|stout|lager|hard cider|"
+    r"licor|calvados?|applejack|grappa|arak|raki|soju|kirsch\w*|framboise|sloe|armagnac|pastis|chartreuse|"
+    r"benedictine|jagermeister|goldschlager|rumchata|tia maria|southern comfort|malibu|bacardi|absolut|"
+    r"smirnoff|jack daniel|jim beam|captain morgan|mead|sherry|madeira|marsala|amarula|disaronno|chambord|"
+    r"moonshine|hooch|schnapp|aquavit|akvavit|aguardiente|aromatic bitter|angostura|cachaça|ouzo)\b")
+NOT_ALCOHOL = re.compile(r"vinegar|extract|flavou?ring|flavou?red (coffee )?creamer|essence|scotch bonnet|ginger ale|root beer|creamer|cookie|"
+                         r"non ?alcoholic|cooking wine|mirin")
+LIQUID = re.compile(
+    r"\b(juice|milk|cream|soda|water|ice|cola|coke|tonic|beverage|drink|nectar|eggnog|sherbet|sorbet|coffee|"
+    r"espresso|tea|syrup|grenadine|punch|lemonade|limeade|seltzer|sprite|7 up|yogurt|kefir|cocoa|concentrate|"
+    r"mix|cocktail|lime|lemon|orange slice|cherry|mint|nutmeg|sugar|salt|honey)\b")
+DRINK_NAME = re.compile(
+    r"\b(cocktails?|mocktails?|martinis?|\w+tinis?|shots?|shooters?|sours?|fizz|coladas?|nogs?|eggnog|mai tais?|"
+    r"cosmo\w*|slammer|julep|caipirinha|mudslides?|sling|bellinis?|spritz\w*|highballs?|toddy|toddies|grog|"
+    r"sangria|punch|mojitos?|margaritas?|daiquiris?|kamikaze|coolers?|sipper|nightcap|bloody mary|screwdriver|"
+    r"manhattan|old fashioned|collins|gimlet|negroni|smash|floats?|liqueur|schnapps|limoncello|irish cream|"
+    r"irish creme|advocaat|coffee|cappuccino|mocha|latte|hot chocolate|cocoa|frosty|freeze|drinks?|beverages?|"
+    r"rita|breeze|sunrise|sunset|kiss|slush\w*|cafe|café|nudge|chiller|creamer|soda|milk|wassail|coquito|"
+    r"sparkler|infusion|in a bottle|spirits)\b")
+# Names that are drinks even when the steps cook (hot toddy, wassail) or the name mentions a fruit.
+STRONG_DRINK_NAME = re.compile(
+    r"\b(cocktails?|martinis?|\w+tinis?|shooters?|nogs?|eggnog|julep|collins|cosmopolitan|margaritas?|daiquiris?|"
+    r"sangria|punch|toddy|toddies|wassail|coquito|sparkler|mojitos?|bellinis?|in a bottle|spirits|"
+    r"homemade kahlua|cafe brulot|café brulot)\b")
+FOOD_NAME = re.compile(
+    r"\b(ice cream|ice pops?|popsicles?|pops|sour cream|dip|sauce|cakes?|bread|pasta|penne|rigatoni|ziti|"
+    r"linguine|fettuccine?|spaghetti|mascarpone|ricotta|fudge|balls|pies?|tarts?|soup|risotto|rice|syrup|"
+    r"sundaes?|strawberries|mangoes|figs|peaches|pears|apples|bananas|plums|cherries|berries|fruit|salad|salsa|"
+    r"toast|pancakes?|waffles?|crepes?|souffle|mousse|trifle|tiramisu|truffles?|brie|cheese|carrots|potatoes|"
+    r"yams|squash|beans|mushrooms|onions|filling|glaze|frosting|butter|jam|jelly|cookies?|bars|brownies?|"
+    r"biscotti|granita|sorbet|custard|flan|pudding|muffins?|scones?|buns?|rolls?|fondue|crumble|crisp|cobbler|"
+    r"chips|nuts|pecans|almonds|torte|candy|cupcakes?|cheesecake|tofu|casserole|stew|chili|curry|omelet|"
+    r"enchiladas?|fritters?|baklava|strudel|clafouti|pastry|parfaits?|vinaigrette|dressing|marinade|spread|"
+    r"whip|topping|mustard|chutney|relish|oatmeal|granola|slaw|compote|shortcakes?|madeleines?|charoset|haroset|"
+    r"watermelon|candy|pudding|crisp)\b")
+FRUIT_WORDS = {"strawberries", "mangoes", "figs", "peaches", "pears", "apples", "bananas", "plums", "cherries",
+               "berries", "fruit"}
+SERVED_AS_DRINK = re.compile(
+    r"\b(glass|glasses|shaker|tumbler|goblet|flute|mugs?|cups?|pitcher|punch ?bowl|strain|straws?|ice cubes?|"
+    r"crushed ice|cracked ice|shake|shaken|blender|blend|over ice|on ice|on the rocks|layer|float)\b")
+NOT_SERVED_AS_DRINK = re.compile(r"glass (baking|dish|bowl|pan|pie|casserole|container|jar|measuring)|"
+                                 r"measuring cups?|cups? of")
+COOKED = re.compile(
+    r"\b(bake|baked|baking|oven|fry|fried|frying|saute|sauté|roast|grill|skillet|preheat|knead|dough|batter|"
+    r"broil|wok|microwave on|boil|simmer|stockpot|casserole|pasta|noodles?|cook until|"
+    r"until (tender|golden|browned|set|firm|thick))\b")
+
+
+def has_alcohol(ings):
+    return any(ALCOHOL.search(i) and not NOT_ALCOHOL.search(i) for i in ings)
+
+
+def is_drink(name, course_, ings, steps):
+    name = name.lower()
+    if course_ == "drink":
+        return True
+    alcohol = has_alcohol(ings)
+    food_words = {m.group(0) for m in FOOD_NAME.finditer(name)} - FRUIT_WORDS
+    if alcohol and STRONG_DRINK_NAME.search(name) and not food_words:
+        return True
+    # "Chocolate Cake Shot", "Homemade Coffee Liqueur", "Brandied Hot Chocolate"
+    if alcohol and re.search(r"\b(shots?|shooters?|liqueur|liquor|hot chocolate|cocoa|cordial)$", name):
+        return True
+    text = " ".join(steps).lower()
+    if FOOD_NAME.search(name) or COOKED.search(text):
+        return False
+    liquid = sum(1 for i in ings if (ALCOHOL.search(i) and not NOT_ALCOHOL.search(i)) or LIQUID.search(i)) / len(ings)
+    served = bool(SERVED_AS_DRINK.search(text)) and not NOT_SERVED_AS_DRINK.search(text)
+    if course_ == "sweet":
+        return alcohol and liquid >= 0.8 and served
+    if alcohol:
+        return bool(DRINK_NAME.search(name)) or served or liquid >= 0.75
+    return (bool(DRINK_NAME.search(name)) and (served or liquid >= 0.75)) or (served and liquid >= 0.85)
+
 # --- Dish grouping ------------------------------------------------------------
 # Recipes whose names reduce to the same key ("Easy Tomato Soup", "Mom's Tomato Soup II") are versions of
 # one dish. The group size is the popularity proxy: the mirror has no ids, so Food.com ratings can't be joined.
@@ -392,12 +479,18 @@ def main():
         if not (3 <= len(key_ings) <= 25):
             stats["too_few_or_many_ingredients"] += 1
             continue
+        crs = course(name)
+        if is_drink(name, crs, norm_ings, steps):
+            if has_alcohol(norm_ings):
+                stats["alcoholic_drink"] += 1
+                continue
+            crs = "drink"
         seen.add(name.lower())
         kept.append({
             "name": name,
             "minutes": minutes,
             "vegan": is_vegan(raw_ings, steps),
-            "course": course(name),
+            "course": crs,
             "ings": norm_ings,
             "key": key_ings,
             # calories, then %DV for fat, sugar, sodium, protein, saturated fat, carbs (column order above)
