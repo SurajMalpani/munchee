@@ -1,0 +1,24 @@
+# Munchee
+
+> What should I eat? Munchee suggests vegetarian and vegan recipes from the ingredients you already have, the time you've got, and the nutrition you want, so fridge and pantry items don't go to waste.
+
+Live: https://munchee.vayuputra.co/
+
+## Features
+
+- 33,199 vegetarian recipes, 7,118 of them vegan, from the Food.com dataset
+- Ingredient search with autocomplete and a browsable ingredient panel
+- Smart ingredient matching (garlic clove counts as garlic, but tomato paste is not fresh tomato)
+- Filters for cooking time and nutrition goals
+- Nutrition per serving and step-by-step instructions
+
+## Useful for
+
+- Deciding what to cook for dinner with what's on hand
+- Using up leftover ingredients to cut food waste
+- Finding quick vegetarian or vegan meals that fit a time limit or nutrition goal
+
+## About
+
+- Free, no sign-up, nothing to install; runs entirely in your browser.
+- Made by [Suraj Malpani](https://surajmalpani.github.io/), published by [Vayuputra](https://vayuputra.co/), which lists all its free tools.
